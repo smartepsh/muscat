@@ -1,0 +1,2 @@
+defmodule Muscat do
+end
