@@ -1,6 +1,6 @@
 defmodule Muscat.Fraction do
   @moduledoc """
-  This module provides some simple opertaions for fraction.
+  This module provides some simple operations for fraction.
   """
 
   @type t :: %__MODULE__{
@@ -14,21 +14,29 @@ defmodule Muscat.Fraction do
   @doc """
   Creates a fraction.
 
-  Both numerator and denominator are integers.(and the denominator can't be 0).
+  Both numerator and denominator are integers.(and the denominator can't be `0`).
 
   It doesn't matter whether the sign of the fraction is at the numerator or denominator.
 
   ## About 0
 
-  - If numerator is 0, the denominator in result is nil and sign is positive.
-  - If denominator is 0, it will raise.
+  - If numerator is `0`, the denominator in result is nil and sign is positive.
+  - If denominator is `0`, it will raise.
 
   ```
-    Fraction.new(0, 1)   # %{numerator: 0, denominator: nil, sign: :positive}
-    Fraction.new(1, 2)   # %{numerator: 1, denominator: 2, sign: :positive}
-    Fraction.new(-1, -2) # %{numerator: 1, denominator: 2, sign: :positive}
-    Fraction.new(-1, 2)  # %{numerator: -1, denominator: 2, sign: :negative}
+  Fraction.new(0, 1)
+  #=> %{numerator: 0, denominator: nil, sign: :positive}
+
+  Fraction.new(1, 2)
+  #=> %{numerator: 1, denominator: 2, sign: :positive}
+
+  Fraction.new(-1, -2)
+  #=> %{numerator: 1, denominator: 2, sign: :positive}
+
+  Fraction.new(-1, 2)
+  #=> %{numerator: -1, denominator: 2, sign: :negative}
   ```
+
   """
   @spec new(numerator :: integer(), denominator :: integer()) :: __MODULE__.t()
   def new(_numerator, 0) do
@@ -60,6 +68,17 @@ defmodule Muscat.Fraction do
 
   @doc """
   Compare two fractions and returns `true` if they are equal, otherwise `false`.
+
+  Fractions will be reduced first and then compared. It means `1/2` is equal to `2/4`.
+
+  ```
+  fraction1 = Fraction.new(1280, 2560)
+  fraction2 = Fraction.new(1, 2)
+
+  Fraction.equal?(fraction1, fraction2)
+  #=> true
+  ```
+
   """
   @spec equal?(__MODULE__.t(), __MODULE__.t()) :: boolean()
   def equal?(%__MODULE__{} = fraction1, %__MODULE__{} = fraction2) do
@@ -78,6 +97,13 @@ defmodule Muscat.Fraction do
 
   @doc """
   Reduce the fraction to the simplest.
+
+  ```
+  Fraction.new(1280, 2560)
+  |> Fraction.reduce()
+  #=> %{numerator: 1, denominator: 2, sign: :positive}
+  ```
+
   """
   @spec reduce(__MODULE__.t()) :: __MODULE__.t()
   def reduce(%__MODULE__{numerator: 0} = fraction), do: fraction
