@@ -34,7 +34,10 @@ defmodule Muscat.Fraction do
   #=> %{numerator: 1, denominator: 2, sign: :positive}
 
   Fraction.new(-1, 2)
-  #=> %{numerator: -1, denominator: 2, sign: :negative}
+  #=> %{numerator: 1, denominator: 2, sign: :negative}
+
+  Fraction.new(1, -2)
+  #=> %{numerator: 1, denominator: 2, sign: :negative}
   ```
 
   """
