@@ -35,7 +35,7 @@ defmodule Muscat.FractionTest do
     test "returns true" do
       assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(1, 2))
       assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(-1, -2))
-      # assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(2, 4))
+      assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(2, 4))
       assert true == Fraction.equal?(Fraction.new(0, 2), Fraction.new(0, 4))
     end
 
