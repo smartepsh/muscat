@@ -63,9 +63,8 @@ defmodule Muscat.Fraction do
   """
   @spec equal?(__MODULE__.t(), __MODULE__.t()) :: boolean()
   def equal?(%__MODULE__{} = fraction1, %__MODULE__{} = fraction2) do
-    # TODO reduce first
-    # fraction1 = reduce(fraction1)
-    # fraction2 = reduce(fraction2)
+    fraction1 = reduce(fraction1)
+    fraction2 = reduce(fraction2)
     do_equal?(fraction1, fraction2)
   end
 
