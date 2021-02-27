@@ -12,7 +12,22 @@ defmodule Muscat.Fraction do
   defstruct [:numerator, :denominator, :sign]
 
   @doc """
-  Creates a fraction.
+  Creates a fraction from integer value.
+
+  ```
+  Fraction.new(2)
+  #=> %{numerator: 2, denominator: 1, sign: :positive}
+
+  Fraction.new(0)
+  #=> %{numerator: 0, denominator: nil, sign: :positive}
+  ```
+
+  """
+  @spec new(integer()) :: __MODULE__.t()
+  def new(value) when is_integer(value), do: new(value, 1)
+
+  @doc """
+  Creates a fraction with numerator and denominator.
 
   Both numerator and denominator are integers.(and the denominator can't be `0`).
 
