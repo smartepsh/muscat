@@ -57,4 +57,23 @@ defmodule Muscat.Fraction do
   def new(_, _) do
     raise ArgumentError, "Both numerator and denominator are integers."
   end
+
+  @doc """
+  Compare two fractions and returns `true` if they are equal, otherwise `false`.
+  """
+  @spec equal?(__MODULE__.t(), __MODULE__.t()) :: boolean()
+  def equal?(%__MODULE__{} = fraction1, %__MODULE__{} = fraction2) do
+    # TODO reduce first
+    # fraction1 = reduce(fraction1)
+    # fraction2 = reduce(fraction2)
+    do_equal?(fraction1, fraction2)
+  end
+
+  defp do_equal?(
+         %{numerator: numerator, denominator: denominator, sign: sign},
+         %{numerator: numerator, denominator: denominator, sign: sign}
+       ),
+       do: true
+
+  defp do_equal?(_fraction1, _fraction2), do: false
 end
