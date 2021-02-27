@@ -30,4 +30,18 @@ defmodule Muscat.FractionTest do
       end
     end
   end
+
+  describe "equal?/2" do
+    test "returns true" do
+      assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(1, 2))
+      assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(-1, -2))
+      # assert true == Fraction.equal?(Fraction.new(1, 2), Fraction.new(2, 4))
+      assert true == Fraction.equal?(Fraction.new(0, 2), Fraction.new(0, 4))
+    end
+
+    test "returns false" do
+      assert false == Fraction.equal?(Fraction.new(1, 2), Fraction.new(-1, 2))
+      assert false == Fraction.equal?(Fraction.new(1, 2), Fraction.new(3, 4))
+    end
+  end
 end
