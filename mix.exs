@@ -1,13 +1,17 @@
 defmodule Muscat.MixProject do
   use Mix.Project
 
+  @url "https://github.com/smartepsh/muscat"
   def project do
     [
       app: :muscat,
       version: "0.1.0",
       elixir: "~> 1.11",
+      description: "A library for solve simple equation.",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      source_url: @url
     ]
   end
 
@@ -21,8 +25,16 @@ defmodule Muscat.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      name: "muscat",
+      maintainers: ["Kenton Wang"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @url}
     ]
   end
 end
