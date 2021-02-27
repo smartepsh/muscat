@@ -44,4 +44,33 @@ defmodule Muscat.FractionTest do
       assert false == Fraction.equal?(Fraction.new(1, 2), Fraction.new(3, 4))
     end
   end
+
+  describe "reduce/1" do
+    test "do nothing when fraction is 0" do
+      assert %{numerator: 0, denominator: nil, sign: :positive} =
+               Fraction.new(0, 1) |> Fraction.reduce()
+    end
+
+    test "to the simplest positive fraction" do
+      assert %{numerator: 1, denominator: 3, sign: :positive} =
+               Fraction.new(1, 3) |> Fraction.reduce()
+
+      assert %{numerator: 1, denominator: 2, sign: :positive} =
+               Fraction.new(2, 4) |> Fraction.reduce()
+
+      assert %{numerator: 1, denominator: 2, sign: :positive} =
+               Fraction.new(1280, 2560) |> Fraction.reduce()
+    end
+
+    test "to the simplest negative fraction" do
+      assert %{numerator: 1, denominator: 3, sign: :negative} =
+               Fraction.new(-1, 3) |> Fraction.reduce()
+
+      assert %{numerator: 1, denominator: 2, sign: :negative} =
+               Fraction.new(-2, 4) |> Fraction.reduce()
+
+      assert %{numerator: 1, denominator: 2, sign: :negative} =
+               Fraction.new(-1280, 2560) |> Fraction.reduce()
+    end
+  end
 end

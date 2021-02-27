@@ -76,4 +76,20 @@ defmodule Muscat.Fraction do
        do: true
 
   defp do_equal?(_fraction1, _fraction2), do: false
+
+  @doc """
+  Reduce the fraction to the simplest.
+  """
+  @spec reduce(__MODULE__.t()) :: __MODULE__.t()
+  def reduce(%__MODULE__{numerator: 0} = fraction), do: fraction
+
+  def reduce(%__MODULE__{numerator: numerator, denominator: denominator} = fraction) do
+    max_common_divisor = Integer.gcd(numerator, denominator)
+
+    %{
+      fraction
+      | numerator: div(numerator, max_common_divisor),
+        denominator: div(denominator, max_common_divisor)
+    }
+  end
 end
