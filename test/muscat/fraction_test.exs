@@ -5,7 +5,7 @@ defmodule Muscat.FractionTest do
 
   describe "new/1" do
     test "success" do
-      assert %{numerator: 0, denominator: nil, sign: :positive} = Fraction.new(0)
+      assert %{numerator: 0, denominator: :any, sign: :positive} = Fraction.new(0)
       assert %{numerator: 2, denominator: 1, sign: :positive} = Fraction.new(2)
       assert %{numerator: 2, denominator: 1, sign: :negative} = Fraction.new(-2)
     end
@@ -20,7 +20,7 @@ defmodule Muscat.FractionTest do
     end
 
     test "success with numerator is 0" do
-      assert %{numerator: 0, denominator: nil, sign: :positive} = Fraction.new(0, 2)
+      assert %{numerator: 0, denominator: :any, sign: :positive} = Fraction.new(0, 2)
     end
 
     test "raises if denominator is 0" do
@@ -56,7 +56,7 @@ defmodule Muscat.FractionTest do
 
   describe "reduce/1" do
     test "do nothing when fraction is 0" do
-      assert %{numerator: 0, denominator: nil, sign: :positive} =
+      assert %{numerator: 0, denominator: :any, sign: :positive} =
                Fraction.new(0, 1) |> Fraction.reduce()
     end
 

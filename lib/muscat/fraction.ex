@@ -5,7 +5,7 @@ defmodule Muscat.Fraction do
 
   @type t :: %__MODULE__{
           numerator: integer(),
-          denominator: integer() | nil,
+          denominator: integer() | :any,
           sign: :positive | :negative
         }
 
@@ -19,7 +19,7 @@ defmodule Muscat.Fraction do
   #=> %{numerator: 2, denominator: 1, sign: :positive}
 
   Fraction.new(0)
-  #=> %{numerator: 0, denominator: nil, sign: :positive}
+  #=> %{numerator: 0, denominator: :any, sign: :positive}
   ```
 
   """
@@ -35,12 +35,12 @@ defmodule Muscat.Fraction do
 
   ## About 0
 
-  - If numerator is `0`, the denominator in result is nil and sign is positive.
+  - If numerator is `0`, the denominator in result is :any and sign is positive.
   - If denominator is `0`, it will raise.
 
   ```
   Fraction.new(0, 1)
-  #=> %{numerator: 0, denominator: nil, sign: :positive}
+  #=> %{numerator: 0, denominator: :any, sign: :positive}
 
   Fraction.new(1, 2)
   #=> %{numerator: 1, denominator: 2, sign: :positive}
@@ -62,7 +62,7 @@ defmodule Muscat.Fraction do
   end
 
   def new(0, denominator) when is_integer(denominator) do
-    %__MODULE__{numerator: 0, denominator: nil, sign: :positive}
+    %__MODULE__{numerator: 0, denominator: :any, sign: :positive}
   end
 
   def new(numerator, denominator) when is_integer(numerator) and is_integer(denominator) do
