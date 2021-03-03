@@ -82,4 +82,30 @@ defmodule Muscat.FractionTest do
                Fraction.new(-1280, 2560) |> Fraction.reduce()
     end
   end
+
+  describe "inverse/1 and reciprocal/1" do
+    test "success" do
+      assert %{numerator: 3, denominator: 1, sign: :negative} =
+               Fraction.new(-1, 3) |> Fraction.inverse()
+
+      assert %{numerator: 3, denominator: 1, sign: :negative} =
+               Fraction.new(-1, 3) |> Fraction.reciprocal()
+
+      assert %{numerator: 3, denominator: 1, sign: :positive} =
+               Fraction.new(1, 3) |> Fraction.inverse()
+
+      assert %{numerator: 3, denominator: 1, sign: :positive} =
+               Fraction.new(1, 3) |> Fraction.reciprocal()
+    end
+
+    test "raises if numerator is 0" do
+      assert_raise ArithmeticError, fn ->
+        Fraction.new(0, 1) |> Fraction.inverse()
+      end
+
+      assert_raise ArithmeticError, fn ->
+        Fraction.new(0, 1) |> Fraction.reciprocal()
+      end
+    end
+  end
 end
