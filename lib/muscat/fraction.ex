@@ -11,6 +11,9 @@ defmodule Muscat.Fraction do
 
   defstruct [:numerator, :denominator, :sign]
 
+  defguardp is_zero_fraction(fraction)
+            when is_struct(fraction, __MODULE__) and fraction.numerator == 0
+
   @doc """
   Creates a fraction from integer value.
 
@@ -124,7 +127,7 @@ defmodule Muscat.Fraction do
 
   """
   @spec reduce(__MODULE__.t()) :: __MODULE__.t()
-  def reduce(%__MODULE__{numerator: 0} = fraction), do: fraction
+  def reduce(fraction) when is_zero_fraction(fraction), do: fraction
 
   def reduce(%__MODULE__{numerator: numerator, denominator: denominator} = fraction) do
     max_common_divisor = Integer.gcd(numerator, denominator)
@@ -154,7 +157,8 @@ defmodule Muscat.Fraction do
 
   """
   @spec inverse(__MODULE__.t()) :: __MODULE__.t()
-  def inverse(%__MODULE__{numerator: 0}), do: raise(ArithmeticError)
+  def inverse(fraction) when is_zero_fraction(fraction),
+    do: raise(ArithmeticError)
 
   def inverse(%__MODULE__{numerator: numerator, denominator: denominator} = fraction) do
     %{fraction | numerator: denominator, denominator: numerator}
@@ -177,7 +181,7 @@ defmodule Muscat.Fraction do
 
   """
   @spec opposite(__MODULE__.t()) :: __MODULE__.t()
-  def opposite(%__MODULE__{numerator: 0} = fraction), do: fraction
+  def opposite(fraction) when is_zero_fraction(fraction), do: fraction
 
   def opposite(%__MODULE__{sign: sign} = fraction) do
     %{fraction | sign: opposite_sign(sign)}
