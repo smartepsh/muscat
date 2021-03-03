@@ -159,4 +159,30 @@ defmodule Muscat.Fraction do
   def inverse(%__MODULE__{numerator: numerator, denominator: denominator} = fraction) do
     %{fraction | numerator: denominator, denominator: numerator}
   end
+
+  @doc """
+  Give the opposite fraction
+
+  If the given numerator is `0`, returns fraction itself.
+
+  ```
+  Fraction.new(1, 2)
+  |> Fraction.opposite()
+  #=> %{numerator: 1, denominator: 2, sign: :negative}
+
+  Fraction.new(0, 2)
+  |> Fraction.opposite()
+  #=> %{numerator: 0, denominator: :any, sign: :positive}
+  ```
+
+  """
+  @spec opposite(__MODULE__.t()) :: __MODULE__.t()
+  def opposite(%__MODULE__{numerator: 0} = fraction), do: fraction
+
+  def opposite(%__MODULE__{sign: sign} = fraction) do
+    %{fraction | sign: opposite_sign(sign)}
+  end
+
+  defp opposite_sign(:positive), do: :negative
+  defp opposite_sign(:negative), do: :positive
 end
