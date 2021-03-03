@@ -120,4 +120,33 @@ defmodule Muscat.FractionTest do
                Fraction.new(1, 3) |> Fraction.opposite()
     end
   end
+
+  describe "add/2" do
+    test "success" do
+      assert %{numerator: 4, denominator: 6, sign: :positive} =
+               Fraction.new(3, 6) |> Fraction.add(Fraction.new(1, 6))
+
+      assert %{numerator: 5, denominator: 6, sign: :positive} =
+               Fraction.new(1, 3) |> Fraction.add(Fraction.new(1, 2))
+
+      assert %{numerator: 1, denominator: 6, sign: :positive} =
+               Fraction.new(-1, 3) |> Fraction.add(Fraction.new(1, 2))
+
+      assert %{numerator: 1, denominator: 6, sign: :negative} =
+               Fraction.new(-1, 2) |> Fraction.add(Fraction.new(1, 3))
+    end
+  end
+
+  describe "minus/2" do
+    test "success" do
+      assert %{numerator: 0, denominator: :any, sign: :positive} =
+               Fraction.new(5, 6) |> Fraction.minus(Fraction.new(5, 6))
+
+      assert %{numerator: 4, denominator: 6, sign: :positive} =
+               Fraction.new(5, 6) |> Fraction.minus(Fraction.new(1, 6))
+
+      assert %{numerator: 1, denominator: 6, sign: :negative} =
+               Fraction.new(1, 3) |> Fraction.minus(Fraction.new(1, 2))
+    end
+  end
 end

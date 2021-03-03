@@ -139,6 +139,67 @@ defmodule Muscat.Fraction do
     }
   end
 
+  @doc """
+  Fraction `+` operation without reduction.
+
+  ```
+  Fraction.new(1, 2)
+  |> Fraction.add(Fraction.new(1, 3))
+  #=> %{numerator: 5, denominator: 6, sign: :positive}
+
+  Fraction.new(2, 4)
+  |> Fraction.add(Fraction.new(1, 3))
+  #=> %{numerator: 10, denominator: 12, sign: :positive}
+  ```
+
+  """
+  @spec add(__MODULE__.t(), __MODULE__.t()) :: __MODULE__.t()
+  def add(fraction1, fraction2) when is_zero_fraction(fraction1), do: fraction2
+  def add(fraction1, fraction2) when is_zero_fraction(fraction2), do: fraction1
+
+  def add(
+        %__MODULE__{denominator: denominator} = fraction1,
+        %__MODULE__{denominator: denominator} = fraction2
+      ) do
+    numerator =
+      signed_number(fraction1.sign).(fraction1.numerator) +
+        signed_number(fraction2.sign).(fraction2.numerator)
+
+    new(numerator, denominator)
+  end
+
+  def add(%__MODULE__{} = fraction1, %__MODULE__{} = fraction2) do
+    numerator =
+      signed_number(fraction1.sign).(fraction1.numerator * fraction2.denominator) +
+        signed_number(fraction2.sign).(fraction2.numerator * fraction1.denominator)
+
+    new(numerator, fraction1.denominator * fraction2.denominator)
+  end
+
+  defp signed_number(:positive), do: &Kernel.+/1
+  defp signed_number(:negative), do: &Kernel.-/1
+
+  @doc """
+  Fraction `-` operation without reduction.
+
+  ```
+  Fraction.new(1, 3)
+  |> Fraction.minus(Fraction.new(1, 2))
+  #=> %{numerator: 1, denominator: 6, sign: :negative}
+
+  Fraction.new(5, 6)
+  |> Fraction.minus(Fraction.new(1, 6))
+  #=> %{numerator: 4, denominator: 6, sign: :positive}
+  ```
+
+  """
+  @spec minus(__MODULE__.t(), __MODULE__.t()) :: __MODULE__.t()
+  def minus(fraction, fraction), do: new(0)
+
+  def minus(fraction1, fraction2) do
+    fraction2 |> opposite() |> add(fraction1)
+  end
+
   @doc "Same to `inverse/1`"
   @spec reciprocal(__MODULE__.t()) :: __MODULE__.t()
   def reciprocal(fraction), do: inverse(fraction)
@@ -152,7 +213,6 @@ defmodule Muscat.Fraction do
   Fraction.new(1, 2)
   |> Fraction.inverse()
   #=> %{numerator: 2, denominator: 1, sign: :positive}
-
   ```
 
   """
