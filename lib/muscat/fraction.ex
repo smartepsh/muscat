@@ -200,6 +200,54 @@ defmodule Muscat.Fraction do
     fraction2 |> opposite() |> add(fraction1)
   end
 
+  @doc """
+  Fraction `*` operation without reduction.
+
+  ```
+  Fraction.new(1, 3)
+  |> Fraction.multi(Fraction.new(1, 2))
+  #=> %{numerator: 1, denominator: 6, sign: :positive}
+
+  Fraction.new(2, 3)
+  |> Fraction.multi(Fraction.new(1, 6))
+  #=> %{numerator: 2, denominator: 18, sign: :positive}
+  ```
+
+  """
+  @spec multi(__MODULE__.t(), __MODULE__.t()) :: __MODULE__.t()
+  def multi(fraction, _fraction2) when is_zero_fraction(fraction), do: new(0)
+  def multi(_fraction1, fraction) when is_zero_fraction(fraction), do: new(0)
+
+  def multi(fraction1, fraction2) do
+    new(
+      signed_number(fraction1.sign).(fraction1.numerator) *
+        signed_number(fraction2.sign).(fraction2.numerator),
+      fraction1.denominator * fraction2.denominator
+    )
+  end
+
+  @doc """
+  Fraction `/` operation without reduction.
+
+  ```
+  Fraction.new(1, 3)
+  |> Fraction.divide(Fraction.new(1, 2))
+  #=> %{numerator: 2, denominator: 3, sign: :positive}
+
+  Fraction.new(2, 4)
+  |> Fraction.divide(Fraction.new(1, 2))
+  #=> %{numerator: 4, denominator: 4, sign: :positive}
+  ```
+
+  """
+  @spec divide(__MODULE__.t(), __MODULE__.t()) :: __MODULE__.t()
+  def divide(fraction, _fraction) when is_zero_fraction(fraction), do: fraction
+  def divide(_fraction, fraction) when is_zero_fraction(fraction), do: raise(ArithmeticError)
+
+  def divide(fraction1, fraction2) do
+    fraction2 |> inverse() |> multi(fraction1)
+  end
+
   @doc "Same to `inverse/1`"
   @spec reciprocal(__MODULE__.t()) :: __MODULE__.t()
   def reciprocal(fraction), do: inverse(fraction)
