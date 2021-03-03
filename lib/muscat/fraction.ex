@@ -135,4 +135,28 @@ defmodule Muscat.Fraction do
         denominator: div(denominator, max_common_divisor)
     }
   end
+
+  @doc "Same to `inverse/1`"
+  @spec reciprocal(__MODULE__.t()) :: __MODULE__.t()
+  def reciprocal(fraction), do: inverse(fraction)
+
+  @doc """
+  Give the fraction reciprocal.
+
+  If the given numerator is `0`, then raise `ArithmeticError`.
+
+  ```
+  Fraction.new(1, 2)
+  |> Fraction.inverse()
+  #=> %{numerator: 2, denominator: 1, sign: :positive}
+
+  ```
+
+  """
+  @spec inverse(__MODULE__.t()) :: __MODULE__.t()
+  def inverse(%__MODULE__{numerator: 0}), do: raise(ArithmeticError)
+
+  def inverse(%__MODULE__{numerator: numerator, denominator: denominator} = fraction) do
+    %{fraction | numerator: denominator, denominator: numerator}
+  end
 end
