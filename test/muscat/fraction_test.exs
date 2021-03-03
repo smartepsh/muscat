@@ -108,4 +108,16 @@ defmodule Muscat.FractionTest do
       end
     end
   end
+
+  describe "opposite/1" do
+    test "do nothing when numerator is 0" do
+      assert %{numerator: 0, denominator: :any, sign: :positive} = fraction = Fraction.new(0, 1)
+      assert %{numerator: 0, denominator: :any, sign: :positive} = Fraction.opposite(fraction)
+    end
+
+    test "success" do
+      assert %{numerator: 1, denominator: 3, sign: :negative} =
+               Fraction.new(1, 3) |> Fraction.opposite()
+    end
+  end
 end
