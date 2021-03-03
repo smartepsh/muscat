@@ -149,4 +149,45 @@ defmodule Muscat.FractionTest do
                Fraction.new(1, 3) |> Fraction.minus(Fraction.new(1, 2))
     end
   end
+
+  describe "multi/2" do
+    test "success" do
+      assert %{numerator: 0, denominator: :any, sign: :positive} =
+               Fraction.new(0) |> Fraction.multi(Fraction.new(1, 6))
+
+      assert %{numerator: 0, denominator: :any, sign: :positive} =
+               Fraction.new(1, 3) |> Fraction.multi(Fraction.new(0))
+
+      assert %{numerator: 6, denominator: 36, sign: :positive} =
+               Fraction.new(6, 6) |> Fraction.multi(Fraction.new(1, 6))
+
+      assert %{numerator: 6, denominator: 36, sign: :negative} =
+               Fraction.new(-6, 6) |> Fraction.multi(Fraction.new(1, 6))
+
+      assert %{numerator: 6, denominator: 36, sign: :positive} =
+               Fraction.new(-6, 6) |> Fraction.multi(Fraction.new(-1, 6))
+    end
+  end
+
+  describe "divide/2" do
+    test "raises ArithmeticError when denominator is zero fraction" do
+      assert_raise ArithmeticError, fn ->
+        Fraction.new(1, 2) |> Fraction.divide(Fraction.new(0))
+      end
+    end
+
+    test "success" do
+      assert %{numerator: 0, denominator: :any, sign: :positive} =
+               Fraction.new(0) |> Fraction.divide(Fraction.new(1, 3))
+
+      assert %{numerator: 36, denominator: 6, sign: :positive} =
+               Fraction.new(6, 6) |> Fraction.divide(Fraction.new(1, 6))
+
+      assert %{numerator: 36, denominator: 6, sign: :negative} =
+               Fraction.new(-6, 6) |> Fraction.divide(Fraction.new(1, 6))
+
+      assert %{numerator: 36, denominator: 6, sign: :positive} =
+               Fraction.new(-6, 6) |> Fraction.divide(Fraction.new(-1, 6))
+    end
+  end
 end
