@@ -59,7 +59,8 @@ defmodule Muscat.Fraction do
   ```
 
   """
-  @spec new(numerator :: integer(), denominator :: integer()) :: __MODULE__.t()
+  @spec new(numerator :: integer(), denominator :: neg_integer() | pos_integer()) ::
+          __MODULE__.t()
   def new(_numerator, 0) do
     raise ArgumentError, "The denominator can't be 0."
   end
