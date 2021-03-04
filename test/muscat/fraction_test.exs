@@ -8,6 +8,7 @@ defmodule Muscat.FractionTest do
       assert %{numerator: 0, denominator: :any, sign: :positive} = Fraction.new(0)
       assert %{numerator: 2, denominator: 1, sign: :positive} = Fraction.new(2)
       assert %{numerator: 2, denominator: 1, sign: :negative} = Fraction.new(-2)
+      assert %{numerator: 1, denominator: 2, sign: :positive} = Fraction.new({1, 2})
     end
   end
 
