@@ -46,8 +46,6 @@ Muscat.rref(augmented_matrix)
 #=> {:ok, [4, 1, -2]}
 ```
 
-See more returning values in the `Muscat.AugmentedMatrix` module doc.
-
 ### Fraction
 
 `Muscat.new/1` and `Muscat.new/2` support fraction value in parameters:
@@ -63,5 +61,5 @@ Muscat.new([{1, 2}, 1])
 ## Targets
 
 - [x] a unique solution
-- [x] an infinite number of solutions
+- [ ] infinite solutions
 - [ ] approximate solutions
