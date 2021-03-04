@@ -194,4 +194,28 @@ defmodule Muscat.FractionTest do
                Fraction.new(-6, 6) |> Fraction.divide(Fraction.new(-1, 6))
     end
   end
+
+  describe "to_float/1" do
+    test "returns 0.0 for zero fraction" do
+      assert 0.0 == Fraction.new(0) |> Fraction.to_float()
+    end
+
+    test "returns normal result without round" do
+      assert 0.3333333333333333 == Fraction.new(1, 3) |> Fraction.to_float()
+    end
+
+    test "returns normal result with round" do
+      assert 0.33 == Fraction.new(1, 3) |> Fraction.to_float(precision: 2)
+    end
+
+    test "raises if precision not btw in 0 and 15" do
+      assert_raise ArgumentError, fn ->
+        Fraction.new(1, 3) |> Fraction.to_float(precision: -1)
+      end
+
+      assert_raise ArgumentError, fn ->
+        Fraction.new(1, 3) |> Fraction.to_float(precision: 16)
+      end
+    end
+  end
 end

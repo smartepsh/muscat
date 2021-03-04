@@ -301,4 +301,27 @@ defmodule Muscat.Fraction do
   @doc "Same to `opposite/1`"
   @spec negate(__MODULE__.t()) :: __MODULE__.t()
   def negate(fraction), do: opposite(fraction)
+
+  @doc """
+  Round a fraction to an arbitrary number of fractional digits.
+
+  ### Options
+
+  - `:precision` - between `0` and `15` . It uses `Float.round/2` to round.
+
+  """
+  @spec to_float(__MODULE__.t()) :: float()
+  @spec to_float(__MODULE__.t(), opts :: [precision: non_neg_integer()]) :: float()
+  def to_float(fraction, opts \\ [])
+  def to_float(%__MODULE__{numerator: 0}, _opts), do: 0.0
+
+  def to_float(%__MODULE__{numerator: numerator, denominator: denominator, sign: sign}, opts) do
+    value = signed_number(sign).(numerator / denominator)
+
+    case opts[:precision] do
+      nil -> value
+      precision when precision in 0..15 -> Float.round(value, precision)
+      _ -> raise ArgumentError, "precision should be in 0..15"
+    end
+  end
 end
