@@ -297,4 +297,8 @@ defmodule Muscat.Fraction do
 
   defp opposite_sign(:positive), do: :negative
   defp opposite_sign(:negative), do: :positive
+
+  @doc "Same to `opposite/1`"
+  @spec negate(__MODULE__.t()) :: __MODULE__.t()
+  def negate(fraction), do: opposite(fraction)
 end
