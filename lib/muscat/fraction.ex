@@ -3,6 +3,7 @@ defmodule Muscat.Fraction do
   This module provides some simple operations for fraction.
   """
 
+  @type fraction_tuple :: {numerator :: integer(), denominator :: neg_integer() | pos_integer()}
   @type t :: %__MODULE__{
           numerator: integer(),
           denominator: integer() | :any,
@@ -15,7 +16,7 @@ defmodule Muscat.Fraction do
             when is_struct(fraction, __MODULE__) and fraction.numerator == 0
 
   @doc """
-  Creates a fraction from integer value.
+  Creates a fraction from integer value or tuple.
 
   ```
   Fraction.new(2)
@@ -23,11 +24,15 @@ defmodule Muscat.Fraction do
 
   Fraction.new(0)
   #=> %{numerator: 0, denominator: :any, sign: :positive}
+
+  Fraction.new({1, 2})
+  #=> %{numerator: 1, denominator: 2, sign: :positive}
   ```
 
   """
-  @spec new(integer()) :: __MODULE__.t()
+  @spec new(integer() | fraction_tuple()) :: __MODULE__.t()
   def new(value) when is_integer(value), do: new(value, 1)
+  def new({numerator, denominator}), do: new(numerator, denominator)
 
   @doc """
   Creates a fraction with numerator and denominator.
