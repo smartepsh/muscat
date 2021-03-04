@@ -11,7 +11,8 @@ defmodule Muscat.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      source_url: @url
+      source_url: @url,
+      docs: docs()
     ]
   end
 
@@ -36,6 +37,13 @@ defmodule Muscat.MixProject do
       maintainers: ["Kenton Wang"],
       licenses: ["MIT"],
       links: %{"GitHub" => @url}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
     ]
   end
 end
