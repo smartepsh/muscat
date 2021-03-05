@@ -31,13 +31,13 @@ defmodule Muscat.MatrixTest do
   end
 
   test "update_row/3", %{matrix: matrix} do
-    matrix = Matrix.update_row(matrix, [%Matrix.Cell{x: 2, y: 1, value: Fraction.new(1)}])
+    matrix = Matrix.update_row(matrix, [%Matrix.Cell{row: 2, col: 1, value: Fraction.new(1)}])
     assert [1.0] == Matrix.get_row(matrix, 2) |> get_value()
   end
 
-  test "max_abs_x_in_y/2", %{matrix: matrix} do
-    assert 4 == Matrix.max_abs_x_in_y(matrix, 2)
-    assert 1 == Matrix.max_abs_x_in_y(matrix, 4)
+  test "max_abs_row_in_col/2", %{matrix: matrix} do
+    assert 4 == Matrix.max_abs_row_in_col(matrix, 2)
+    assert 1 == Matrix.max_abs_row_in_col(matrix, 4)
   end
 
   test "row_count/1", %{matrix: matrix} do

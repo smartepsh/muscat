@@ -20,7 +20,7 @@ defmodule Muscat.AugmentedMatrix do
           |> Enum.at(col - 1)
           |> Fraction.new()
 
-        %Matrix.Cell{x: row, y: col, value: value}
+        %Matrix.Cell{row: row, col: col, value: value}
       end
     else
       raise ArgumentError, "The given parameter can not generate the augmented matrix."
