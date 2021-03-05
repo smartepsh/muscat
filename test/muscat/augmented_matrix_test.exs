@@ -6,12 +6,12 @@ defmodule Muscat.AugmentedMatrixTest do
   describe "new/1" do
     test "success" do
       assert [
-               %{x: 1, y: 1, value: %{numerator: 1, denominator: 1}},
-               %{x: 1, y: 2, value: %{numerator: 2, denominator: 1}},
-               %{x: 1, y: 3, value: %{numerator: 3, denominator: 1}},
-               %{x: 2, y: 1, value: %{numerator: 4, denominator: 1}},
-               %{x: 2, y: 2, value: %{numerator: 2, denominator: 4}},
-               %{x: 2, y: 3, value: %{numerator: 2, denominator: 1}}
+               %{row: 1, col: 1, value: %{numerator: 1, denominator: 1}},
+               %{row: 1, col: 2, value: %{numerator: 2, denominator: 1}},
+               %{row: 1, col: 3, value: %{numerator: 3, denominator: 1}},
+               %{row: 2, col: 1, value: %{numerator: 4, denominator: 1}},
+               %{row: 2, col: 2, value: %{numerator: 2, denominator: 4}},
+               %{row: 2, col: 3, value: %{numerator: 2, denominator: 1}}
              ] = AugmentedMatrix.new([[1, 2, 3], [4, {2, 4}, 2]])
     end
 
@@ -31,12 +31,12 @@ defmodule Muscat.AugmentedMatrixTest do
   describe "new/2" do
     test "success" do
       assert [
-               %{x: 1, y: 1, value: %{numerator: 1, denominator: 1}},
-               %{x: 1, y: 2, value: %{numerator: 2, denominator: 1}},
-               %{x: 1, y: 3, value: %{numerator: 3, denominator: 1}},
-               %{x: 2, y: 1, value: %{numerator: 4, denominator: 1}},
-               %{x: 2, y: 2, value: %{numerator: 5, denominator: 1}},
-               %{x: 2, y: 3, value: %{numerator: 6, denominator: 1}}
+               %{row: 1, col: 1, value: %{numerator: 1, denominator: 1}},
+               %{row: 1, col: 2, value: %{numerator: 2, denominator: 1}},
+               %{row: 1, col: 3, value: %{numerator: 3, denominator: 1}},
+               %{row: 2, col: 1, value: %{numerator: 4, denominator: 1}},
+               %{row: 2, col: 2, value: %{numerator: 5, denominator: 1}},
+               %{row: 2, col: 3, value: %{numerator: 6, denominator: 1}}
              ] = AugmentedMatrix.new([[1, 2], [4, 5]], [3, 6])
     end
 
