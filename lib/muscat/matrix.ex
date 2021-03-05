@@ -8,11 +8,15 @@ defmodule Muscat.Matrix do
   end
 
   def get_row(matrix, row) do
-    Enum.filter(matrix, &(&1.row == row))
+    matrix
+    |> Enum.filter(&(&1.row == row))
+    |> Enum.sort_by(& &1.col)
   end
 
   def get_col(matrix, col) do
-    Enum.filter(matrix, &(&1.col == col))
+    matrix
+    |> Enum.filter(&(&1.col == col))
+    |> Enum.sort_by(& &1.row)
   end
 
   def get_cell(matrix, row, col) do
