@@ -1,6 +1,7 @@
 defmodule Muscat.AugmentedMatrix do
   alias Muscat.Matrix
   alias Muscat.Fraction
+  import Muscat.Fraction, only: [is_zero_fraction: 1]
 
   @type element :: Fraction.fraction_tuple() | integer()
   @type matrix :: nonempty_list(Matrix.Cell.t())
@@ -116,7 +117,71 @@ defmodule Muscat.AugmentedMatrix do
   end
 
   defp upper_triangular_matrix(matrix) do
-    matrix
+    case Matrix.row_count(matrix) do
+      1 ->
+        matrix
+
+      row_count ->
+        Range.new(1, row_count - 1)
+        |> Enum.reduce(matrix, fn row, matrix ->
+          elementary_row_transform(matrix, row)
+        end)
+    end
+  end
+
+  defp elementary_row_transform(matrix, row) do
+    matrix = swap_rows_if_needed(matrix, row)
+
+    case Matrix.get_cell(matrix, row, row) do
+      %{value: value} when is_zero_fraction(value) ->
+        matrix
+
+      diagonal_cell ->
+        base_row = Matrix.get_row(matrix, row)
+        {other_cells, transform_cells} = Enum.split_with(matrix, &(&1.row <= row))
+
+        cells =
+          transform_cells
+          |> Enum.group_by(& &1.row)
+          |> Enum.map(fn {target_row, row_cells} ->
+            case Matrix.get_cell(matrix, target_row, row) do
+              %{value: value} when is_zero_fraction(value) ->
+                row_cells
+
+              %{value: target_value} ->
+                coefficient = Fraction.divide(target_value, diagonal_cell.value)
+                do_elementary_transform(coefficient, base_row, row_cells)
+            end
+          end)
+          |> List.flatten()
+
+        cells ++ other_cells
+    end
+  end
+
+  defp do_elementary_transform(coefficient, base_row, row_cells) do
+    row_cells
+    |> Enum.sort_by(& &1.col)
+    |> Enum.zip(base_row)
+    |> Enum.map(fn {row_cell, base_cell} ->
+      Matrix.update_cell(
+        row_cell,
+        &Fraction.minus(&1, Fraction.multi(coefficient, base_cell.value))
+      )
+    end)
+  end
+
+  defp swap_rows_if_needed(matrix, row) do
+    case matrix |> Enum.reject(&(&1.row < row)) |> Matrix.max_abs_row_in_col(row) do
+      ^row ->
+        matrix
+
+      :no_data ->
+        matrix
+
+      max_row ->
+        Matrix.swap_row(matrix, row, max_row)
+    end
   end
 
   defp valid_solution_exists(upper_triangular_matrix) do
