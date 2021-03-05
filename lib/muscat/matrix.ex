@@ -47,4 +47,9 @@ defmodule Muscat.Matrix do
   def row_count(matrix) do
     matrix |> Enum.uniq_by(& &1.row) |> length()
   end
+
+  def update_cell(cell, value_func \\ & &1) do
+    value = value_func.(cell.value)
+    %{cell | value: value}
+  end
 end
