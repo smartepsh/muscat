@@ -55,6 +55,23 @@ defmodule Muscat.FractionTest do
     end
   end
 
+  describe "compare/2" do
+    test "eq" do
+      assert :eq == Fraction.compare(Fraction.new(1, 2), Fraction.new(1, 2))
+      assert :eq == Fraction.compare(Fraction.new(1, 2), Fraction.new(2, 4))
+    end
+
+    test "lt" do
+      assert :lt == Fraction.compare(Fraction.new(1, 2), Fraction.new(1))
+      assert :lt == Fraction.compare(Fraction.new(-1, 2), Fraction.new(-1, 3))
+    end
+
+    test "gt" do
+      assert :gt == Fraction.compare(Fraction.new(-1, 2), Fraction.new(-1))
+      assert :gt == Fraction.compare(Fraction.new(-1, 3), Fraction.new(-1, 2))
+    end
+  end
+
   describe "reduce/1" do
     test "do nothing when fraction is 0" do
       assert %{numerator: 0, denominator: :any, sign: :positive} =

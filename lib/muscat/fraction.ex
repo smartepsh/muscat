@@ -111,16 +111,42 @@ defmodule Muscat.Fraction do
   def equal?(%__MODULE__{} = fraction1, %__MODULE__{} = fraction2) do
     fraction1 = reduce(fraction1)
     fraction2 = reduce(fraction2)
-    do_equal?(fraction1, fraction2)
+
+    compare(fraction1, fraction2) == :eq
   end
 
-  defp do_equal?(
-         %{numerator: numerator, denominator: denominator, sign: sign},
-         %{numerator: numerator, denominator: denominator, sign: sign}
-       ),
-       do: true
+  @doc """
+  Compare two fractions with returning `:eq`, `:lt` and `:gt` .
 
-  defp do_equal?(_fraction1, _fraction2), do: false
+  ```
+  fraction1 = Fraction.new(1280, 2560)
+  fraction2 = Fraction.new(1, 2)
+
+  Fraction.equal?(fraction1, fraction2)
+  #=> :eq
+  ```
+
+  """
+  @spec compare(__MODULE__.t(), __MODULE__.t()) :: :gt | :lt | :eq
+  def compare(%{sign: :positive}, %{sign: :negative}), do: :gt
+  def compare(%{sign: :negative}, %{sign: :positive}), do: :lt
+
+  def compare(
+        %{numerator: numerator, denominator: denominator, sign: sign},
+        %{numerator: numerator, denominator: denominator, sign: sign}
+      ),
+      do: :eq
+
+  def compare(fraction1, fraction2) do
+    fraction1 = reduce(fraction1)
+    fraction2 = reduce(fraction2)
+
+    case minus(fraction1, fraction2) do
+      fraction when is_zero_fraction(fraction) -> :eq
+      %{sign: :positive} -> :gt
+      %{sign: :negative} -> :lt
+    end
+  end
 
   @doc """
   Reduce the fraction to the simplest.
