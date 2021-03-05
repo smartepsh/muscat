@@ -12,8 +12,8 @@ defmodule Muscat.Fraction do
 
   defstruct [:numerator, :denominator, :sign]
 
-  defguardp is_zero_fraction(fraction)
-            when is_struct(fraction, __MODULE__) and fraction.numerator == 0
+  defguard is_zero_fraction(fraction)
+           when is_struct(fraction, __MODULE__) and fraction.numerator == 0
 
   @doc """
   Creates a fraction from integer value or tuple.
