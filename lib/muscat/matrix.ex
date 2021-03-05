@@ -15,6 +15,10 @@ defmodule Muscat.Matrix do
     Enum.filter(matrix, &(&1.col == col))
   end
 
+  def get_cell(matrix, row, col) do
+    Enum.find(matrix, &(&1.row == row and &1.col == col))
+  end
+
   def swap_row(matrix, row1, row2) do
     row_1 = matrix |> get_row(row1) |> Enum.map(&%{&1 | row: row2})
     row_2 = matrix |> get_row(row2) |> Enum.map(&%{&1 | row: row1})

@@ -24,6 +24,12 @@ defmodule Muscat.MatrixTest do
     assert [2.0, 2.0, 2.0, -5.0, 3.0] = Matrix.get_col(matrix, 2) |> get_value()
   end
 
+  test "get_cell/2", %{matrix: matrix} do
+    assert %{row: 2, col: 3, value: value} = Matrix.get_cell(matrix, 2, 3)
+
+    assert 3.0 == Fraction.to_float(value)
+  end
+
   test "swap_row/3", %{matrix: matrix} do
     matrix = Matrix.swap_row(matrix, 3, 5)
     assert [4.0, 3.0, 2.0, 3.0] = Matrix.get_row(matrix, 3) |> get_value()
