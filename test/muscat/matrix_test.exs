@@ -44,6 +44,7 @@ defmodule Muscat.MatrixTest do
   test "max_abs_row_in_col/2", %{matrix: matrix} do
     assert 4 == Matrix.max_abs_row_in_col(matrix, 2)
     assert 1 == Matrix.max_abs_row_in_col(matrix, 4)
+    assert :no_data == Matrix.max_abs_row_in_col(matrix, 6)
   end
 
   test "row_count/1", %{matrix: matrix} do

@@ -35,12 +35,13 @@ defmodule Muscat.Matrix do
   end
 
   def max_abs_row_in_col(matrix, col) do
-    %{row: row} =
-      matrix
-      |> get_col(col)
-      |> Enum.max_by(&Fraction.abs(&1.value), Fraction)
-
-    row
+    matrix
+    |> get_col(col)
+    |> Enum.max_by(&Fraction.abs(&1.value), Fraction, fn -> [] end)
+    |> case do
+      [] -> :no_data
+      %{row: row} -> row
+    end
   end
 
   def row_count(matrix) do
