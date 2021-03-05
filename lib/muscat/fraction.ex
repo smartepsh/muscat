@@ -334,6 +334,11 @@ defmodule Muscat.Fraction do
   @spec negate(__MODULE__.t()) :: __MODULE__.t()
   def negate(fraction), do: opposite(fraction)
 
+  @doc "Return the absolute value of fraction."
+  @spec abs(__MODULE__.t()) :: __MODULE__.t()
+  def abs(%__MODULE__{sign: :positive} = fraction), do: fraction
+  def abs(%__MODULE__{sign: :negative} = fraction), do: %{fraction | sign: :positive}
+
   @doc """
   Round a fraction to an arbitrary number of fractional digits.
 
