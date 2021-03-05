@@ -236,4 +236,14 @@ defmodule Muscat.FractionTest do
       end
     end
   end
+
+  describe "abs/1" do
+    test "success" do
+      assert %{numerator: 1, denominator: 6, sign: :positive} =
+               Fraction.new(-1, 6) |> Fraction.abs()
+
+      assert %{numerator: 1, denominator: 6, sign: :positive} =
+               Fraction.new(1, 6) |> Fraction.abs()
+    end
+  end
 end
