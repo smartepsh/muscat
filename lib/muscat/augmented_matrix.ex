@@ -226,7 +226,48 @@ defmodule Muscat.AugmentedMatrix do
   end
 
   defp diagonal_matrix(upper_triangular_matrix) do
-    upper_triangular_matrix
+    row_count = Matrix.row_count(upper_triangular_matrix)
+
+    Range.new(row_count, 1)
+    |> Enum.reduce(upper_triangular_matrix, fn row, matrix ->
+      eliminate_element(matrix, row)
+    end)
+  end
+
+  defp eliminate_element(matrix, row) do
+    base_cell = Matrix.get_cell(matrix, row, row)
+    col_cells = Matrix.get_col(matrix, row)
+    constant_column = get_constant_column(matrix)
+    base_constant = Enum.find(constant_column, &(&1.row == row))
+
+    {col_cells, constant_column} =
+      col_cells
+      |> Enum.zip(constant_column)
+      |> Enum.reduce({[], []}, fn
+        {^base_cell = col_cell, constant}, {col_cells, constant_column} ->
+          {[col_cell | col_cells], [constant | constant_column]}
+
+        {col_cell, constant}, {col_cells, constant_column}
+        when is_zero_fraction(col_cell.value) ->
+          {[col_cell | col_cells], [constant | constant_column]}
+
+        {col_cell, constant}, {col_cells, constant_column} ->
+          coefficient = Fraction.divide(col_cell.value, base_cell.value)
+          col_cell = do_eliminate_element(col_cell, coefficient, base_cell)
+          constant = do_eliminate_element(constant, coefficient, base_constant)
+          {[col_cell | col_cells], [constant | constant_column]}
+      end)
+
+    matrix
+    |> Matrix.update_col(col_cells)
+    |> Matrix.update_col(constant_column)
+  end
+
+  defp do_eliminate_element(cell, coefficient, target_cell) do
+    Matrix.update_cell(
+      cell,
+      &(&1 |> Fraction.minus(Fraction.multi(coefficient, target_cell.value)))
+    )
   end
 
   defp identity_matrix(diagonal_matrix) do
@@ -234,12 +275,11 @@ defmodule Muscat.AugmentedMatrix do
   end
 
   defp get_constant_column(matrix) do
-    {_, cells} =
+    col =
       matrix
-      |> Enum.group_by(& &1.col)
-      |> Enum.sort_by(fn {col, _cells} -> col end)
-      |> List.last()
+      |> Enum.map(& &1.col)
+      |> Enum.max()
 
-    cells
+    Matrix.get_col(matrix, col)
   end
 end
