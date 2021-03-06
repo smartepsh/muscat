@@ -272,6 +272,19 @@ defmodule Muscat.AugmentedMatrix do
 
   defp identity_matrix(diagonal_matrix) do
     diagonal_matrix
+    |> Enum.group_by(& &1.row)
+    |> Enum.reduce(diagonal_matrix, fn {row, row_cells}, matrix ->
+      %{value: base_value} = Matrix.get_cell(row_cells, row, row)
+      coefficient = Fraction.inverse(base_value)
+
+      row_cells =
+        Enum.map(row_cells, fn
+          %{value: value} = cell when is_zero_fraction(value) -> cell
+          cell -> Matrix.update_cell(cell, &Fraction.multi(&1, coefficient))
+        end)
+
+      Matrix.update_row(matrix, row_cells)
+    end)
   end
 
   defp get_constant_column(matrix) do
