@@ -82,7 +82,7 @@ defmodule Muscat.AugmentedMatrix do
           | {:error, :approximate_solution}
   def rref(matrix, opts \\ []) do
     with upper_triangular_matrix <- upper_triangular_matrix(matrix),
-         :ok <- valid_solution_exists(upper_triangular_matrix) do
+         {:ok, :single_solution} <- valid_solution_exists(upper_triangular_matrix) do
       solution =
         upper_triangular_matrix
         |> diagonal_matrix()
@@ -97,13 +97,13 @@ defmodule Muscat.AugmentedMatrix do
     default_value = Keyword.get(opts, :default_value, :any)
     value_type = Keyword.get(opts, :value_type, :float)
 
-    [{_y, last_column}] =
+    {_col, last_column} =
       identity_matrix
-      |> Enum.group_by(& &1.y)
-      |> Enum.max_by(fn {y, _} -> y end)
+      |> Enum.group_by(& &1.col)
+      |> Enum.max_by(fn {col, _} -> col end)
 
     last_column
-    |> Enum.sort_by(& &1.x)
+    |> Enum.sort_by(& &1.row)
     |> Enum.map(fn
       %{value: :any} ->
         default_value
@@ -185,7 +185,44 @@ defmodule Muscat.AugmentedMatrix do
   end
 
   defp valid_solution_exists(upper_triangular_matrix) do
-    upper_triangular_matrix
+    constant_column = get_constant_column(upper_triangular_matrix)
+    coefficient_matrix = upper_triangular_matrix -- constant_column
+
+    augmented_rank = rank(upper_triangular_matrix)
+    coefficient_rank = rank(coefficient_matrix)
+    element_count = element_number(coefficient_matrix)
+
+    cond do
+      augmented_rank == coefficient_rank and
+          coefficient_rank == element_count ->
+        {:ok, :single_solution}
+
+      augmented_rank == coefficient_rank and
+          coefficient_rank < element_count ->
+        {:error, :infinite_solutions}
+
+      augmented_rank > element_count ->
+        {:error, :approximate_solutions}
+
+      true ->
+        {:error, :no_solution}
+    end
+  end
+
+  def rank(matrix) do
+    matrix
+    |> Enum.group_by(& &1.row)
+    |> Enum.reject(fn {_row, cells} ->
+      Enum.all?(cells, &Fraction.is_zero_fraction(&1.value))
+    end)
+    |> length()
+  end
+
+  def element_number(coefficient_matrix) do
+    coefficient_matrix
+    |> Enum.group_by(& &1.col)
+    |> Enum.to_list()
+    |> length()
   end
 
   defp diagonal_matrix(upper_triangular_matrix) do
@@ -194,5 +231,15 @@ defmodule Muscat.AugmentedMatrix do
 
   defp identity_matrix(diagonal_matrix) do
     diagonal_matrix
+  end
+
+  defp get_constant_column(matrix) do
+    {_, cells} =
+      matrix
+      |> Enum.group_by(& &1.col)
+      |> Enum.sort_by(fn {col, _cells} -> col end)
+      |> List.last()
+
+    cells
   end
 end

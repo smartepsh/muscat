@@ -81,11 +81,11 @@ defmodule Muscat.AugmentedMatrixTest do
     end
 
     test "returns approximate_solution" do
-      assert {:error, :approximate_solution} ==
+      assert {:error, :approximate_solutions} ==
                AugmentedMatrix.new([
-                 [4, 3],
-                 [7, 5],
-                 [11, 8]
+                 [4, 3, 3],
+                 [0, 2, 5],
+                 [0, 0, 8]
                ])
                |> AugmentedMatrix.rref()
     end
@@ -101,7 +101,7 @@ defmodule Muscat.AugmentedMatrixTest do
       assert {:error, :no_solution} =
                AugmentedMatrix.new([
                  [1, 2, 3, 0],
-                 [3, 4, 7, 2]
+                 [0, 0, 0, 2]
                ])
                |> AugmentedMatrix.rref()
     end
