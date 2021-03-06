@@ -49,9 +49,9 @@ defmodule Muscat.AugmentedMatrixTest do
 
   describe "rref/1" do
     test "success" do
-      assert [1.0] == AugmentedMatrix.new([[1, 1]]) |> AugmentedMatrix.rref()
+      assert {:ok, [1.0]} == AugmentedMatrix.new([[1, 1]]) |> AugmentedMatrix.rref()
 
-      assert [11.0, -8.0, -6.0, -7.0] ==
+      assert {:ok, [11.0, -8.0, -6.0, -7.0]} ==
                AugmentedMatrix.new([
                  [2, -2, 2, 6, -16],
                  [2, -1, 2, 4, -10],
@@ -60,7 +60,7 @@ defmodule Muscat.AugmentedMatrixTest do
                ])
                |> AugmentedMatrix.rref()
 
-      assert [4.0, 1.0, -2.0] ==
+      assert {:ok, [4.0, 1.0, -2.0]} ==
                AugmentedMatrix.new([
                  [1, 2, 3, 0],
                  [3, 4, 7, 2],
