@@ -11,7 +11,7 @@
 ```elixir
 def deps do
   [
-    {:muscat, "~> 0.1.0"}
+    {:muscat, "~> 0.2"}
   ]
 end
 ```
