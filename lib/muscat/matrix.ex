@@ -38,6 +38,12 @@ defmodule Muscat.Matrix do
     others ++ new_cells
   end
 
+  def update_col(matrix, [%{col: col} | _] = new_cells) do
+    {_, others} = Enum.split_with(matrix, &(&1.col == col))
+
+    others ++ new_cells
+  end
+
   def max_abs_row_in_col(matrix, col) do
     matrix
     |> get_col(col)
