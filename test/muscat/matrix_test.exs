@@ -36,9 +36,14 @@ defmodule Muscat.MatrixTest do
     assert [3.0, 2.0, 3.0, 4.0] = Matrix.get_row(matrix, 5) |> get_value()
   end
 
-  test "update_row/3", %{matrix: matrix} do
+  test "update_row/2", %{matrix: matrix} do
     matrix = Matrix.update_row(matrix, [%Matrix.Cell{row: 2, col: 1, value: Fraction.new(1)}])
     assert [1.0] == Matrix.get_row(matrix, 2) |> get_value()
+  end
+
+  test "update_col/2", %{matrix: matrix} do
+    matrix = Matrix.update_col(matrix, [%Matrix.Cell{row: 2, col: 1, value: Fraction.new(1)}])
+    assert [1.0] == Matrix.get_col(matrix, 1) |> get_value()
   end
 
   test "max_abs_row_in_col/2", %{matrix: matrix} do
