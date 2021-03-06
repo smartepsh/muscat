@@ -60,7 +60,7 @@ defmodule Muscat.MatrixTest do
     cell = Matrix.get_cell(matrix, 2, 2)
 
     assert %{col: 2, row: 2, value: value} =
-             cell = Matrix.update_cell(cell, &Fraction.add(&1, Fraction.new(1)))
+             Matrix.update_cell(cell, &Fraction.add(&1, Fraction.new(1)))
 
     assert 3.0 == Fraction.to_float(value)
   end
