@@ -97,12 +97,8 @@ defmodule Muscat.AugmentedMatrix do
     default_value = Keyword.get(opts, :default_value, :any)
     value_type = Keyword.get(opts, :value_type, :float)
 
-    {_col, last_column} =
-      identity_matrix
-      |> Enum.group_by(& &1.col)
-      |> Enum.max_by(fn {col, _} -> col end)
-
-    last_column
+    identity_matrix
+    |> get_constant_column()
     |> Enum.sort_by(& &1.row)
     |> Enum.map(fn
       %{value: :any} ->
@@ -166,7 +162,7 @@ defmodule Muscat.AugmentedMatrix do
     |> Enum.map(fn {row_cell, base_cell} ->
       Matrix.update_cell(
         row_cell,
-        &Fraction.minus(&1, Fraction.multi(coefficient, base_cell.value))
+        &(&1 |> Fraction.minus(Fraction.multi(coefficient, base_cell.value)) |> Fraction.reduce())
       )
     end)
   end
@@ -266,7 +262,7 @@ defmodule Muscat.AugmentedMatrix do
   defp do_eliminate_element(cell, coefficient, target_cell) do
     Matrix.update_cell(
       cell,
-      &(&1 |> Fraction.minus(Fraction.multi(coefficient, target_cell.value)))
+      &(&1 |> Fraction.minus(Fraction.multi(coefficient, target_cell.value)) |> Fraction.reduce())
     )
   end
 
@@ -279,8 +275,11 @@ defmodule Muscat.AugmentedMatrix do
 
       row_cells =
         Enum.map(row_cells, fn
-          %{value: value} = cell when is_zero_fraction(value) -> cell
-          cell -> Matrix.update_cell(cell, &Fraction.multi(&1, coefficient))
+          %{value: value} = cell when is_zero_fraction(value) ->
+            cell
+
+          cell ->
+            Matrix.update_cell(cell, &(&1 |> Fraction.multi(coefficient) |> Fraction.reduce()))
         end)
 
       Matrix.update_row(matrix, row_cells)
