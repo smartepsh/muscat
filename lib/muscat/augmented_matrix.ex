@@ -1,14 +1,14 @@
 defmodule Muscat.AugmentedMatrix do
   alias Muscat.Matrix
   alias Muscat.Fraction
+
   import Muscat.Fraction, only: [is_zero_fraction: 1]
 
   @type element :: Fraction.fraction_tuple() | integer()
   @type matrix :: nonempty_list(Matrix.Cell.t())
 
   @doc "Create augmented matrix by augmented matrix list"
-  @spec new(augmented_matrix :: nonempty_list(nonempty_list(element()))) ::
-          nonempty_list(matrix())
+  @spec new(augmented_matrix :: nonempty_list(nonempty_list(element()))) :: matrix()
   def new(augmented_matrix) do
     if all_list?(augmented_matrix) and valid_list?(augmented_matrix) do
       rows_count = length(augmented_matrix)
@@ -32,7 +32,7 @@ defmodule Muscat.AugmentedMatrix do
   @spec new(
           coefficient_matrix :: nonempty_list(nonempty_list(element())),
           constant_column :: nonempty_list(element())
-        ) :: nonempty_list(matrix())
+        ) :: matrix()
   def new(coefficient_matrix, constant_column) do
     if length(coefficient_matrix) == length(constant_column) do
       coefficient_matrix
@@ -61,25 +61,20 @@ defmodule Muscat.AugmentedMatrix do
   @doc """
   Reduce a augmented matrix into `reduced row echelon form` and give the equation solution.
 
-  The function name `rref` is taken from `Matlab`.
-
   ### Options
 
   - `:value_type` - The result value type, `:float`(default), `:fraction`.
   - `:precision` - If the `result_type` is `:float`, round the float.
 
   """
-  @type solution :: list(Fraction.t() | float() | :any)
-  @spec rref(augmented_matrix :: matrix()) ::
+  @type solution :: list(Fraction.t() | float())
+  @type rref_result ::
           {:ok, solution()}
           | {:error, :no_solution}
           | {:error, :infinite_solutions}
           | {:error, :approximate_solution}
-  @spec rref(augmented_matrix :: matrix(), opts :: keyword()) ::
-          {:ok, solution()}
-          | {:error, :no_solution}
-          | {:error, :infinite_solutions}
-          | {:error, :approximate_solution}
+  @spec rref(augmented_matrix :: matrix()) :: rref_result()
+  @spec rref(augmented_matrix :: matrix(), opts :: keyword()) :: rref_result()
   def rref(matrix, opts \\ []) do
     with upper_triangular_matrix <- upper_triangular_matrix(matrix),
          {:ok, :single_solution} <- valid_solution_exists(upper_triangular_matrix) do
