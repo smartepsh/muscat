@@ -109,7 +109,7 @@ defmodule Muscat.AugmentedMatrix do
   defp set_default_rows_if_needed(matrix, :single_solution, _), do: matrix
 
   defp set_default_rows_if_needed(matrix, :infinite_solutions, opts) do
-    default_value = Keyword.get(opts, :default_value, Fraction.new(1))
+    default_value = Keyword.get(opts, :default_value, 1) |> Fraction.new()
     coefficient_cols = Matrix.col_count(matrix) - 1
     total_rows = Range.new(1, coefficient_cols) |> Enum.to_list()
     {new_matrix, exist_rows} = missing_main_diagonal_cell_idxs(matrix)

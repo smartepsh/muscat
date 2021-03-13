@@ -10,6 +10,7 @@ defmodule Muscat do
 
   - `:value_type` - The result value type, `:float`(default), `:fraction`.
   - `:precision` - If the `result_type` is `:float`, round the float.
+  - `default_value` - For infinite solutions, solve the equation by it. The default value is `1`.
 
   """
   @spec rref(augmented_matrix :: nonempty_list(nonempty_list(AugmentedMatrix.element()))) ::
