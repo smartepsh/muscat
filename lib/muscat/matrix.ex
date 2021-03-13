@@ -44,6 +44,14 @@ defmodule Muscat.Matrix do
     others ++ new_cells
   end
 
+  def remove_row(matrix, [%{row: row} | _]) do
+    Enum.reject(matrix, &(&1.row == row))
+  end
+
+  def add_row(matrix, row_cells) do
+    row_cells ++ matrix
+  end
+
   def max_abs_row_in_col(matrix, col) do
     matrix
     |> get_col(col)
@@ -56,6 +64,10 @@ defmodule Muscat.Matrix do
 
   def row_count(matrix) do
     matrix |> Enum.uniq_by(& &1.row) |> length()
+  end
+
+  def col_count(matrix) do
+    matrix |> Enum.uniq_by(& &1.col) |> length()
   end
 
   def update_cell(cell, value_func \\ & &1) do

@@ -48,6 +48,19 @@ defmodule Muscat.AugmentedMatrixTest do
   end
 
   describe "rref/1" do
+    test "fix raises ArithmeticError for special cases" do
+      assert {:ok, [1.0, 1.0, 1.0, 1.0, 1.0]} ==
+               [
+                 [1, 0, 1, 0, 0, {2, 1}],
+                 [0, 1, 0, 1, 0, {2, 1}],
+                 [0, 0, 0, 0, 1, {1, 1}],
+                 [1, 1, 0, 0, 0, {2, 1}],
+                 [0, 0, 1, 1, 1, {3, 1}]
+               ]
+               |> AugmentedMatrix.new()
+               |> AugmentedMatrix.rref()
+    end
+
     test "success" do
       assert {:ok, [1.0]} == AugmentedMatrix.new([[1, 1]]) |> AugmentedMatrix.rref()
 
