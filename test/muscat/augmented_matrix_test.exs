@@ -48,19 +48,6 @@ defmodule Muscat.AugmentedMatrixTest do
   end
 
   describe "rref/1" do
-    test "fix raises ArithmeticError for special cases" do
-      assert {:ok, [1.0, 1.0, 1.0, 1.0, 1.0]} ==
-               [
-                 [1, 0, 1, 0, 0, {2, 1}],
-                 [0, 1, 0, 1, 0, {2, 1}],
-                 [0, 0, 0, 0, 1, {1, 1}],
-                 [1, 1, 0, 0, 0, {2, 1}],
-                 [0, 0, 1, 1, 1, {3, 1}]
-               ]
-               |> AugmentedMatrix.new()
-               |> AugmentedMatrix.rref()
-    end
-
     test "success" do
       assert {:ok, [1.0]} == AugmentedMatrix.new([[1, 1]]) |> AugmentedMatrix.rref()
 
@@ -83,14 +70,27 @@ defmodule Muscat.AugmentedMatrixTest do
     end
 
     test "returns infinite_solutions" do
-      assert {:error, :infinite_solutions} ==
-               AugmentedMatrix.new([
-                 [-2, -2, 2, -2, 2, -2],
-                 [1, -5, 1, -1, -3, -1],
-                 [-1, 2, -5, 5, 6, 2],
-                 [-1, 2, 1, -1, 0, 0]
-               ])
+      assert {:ok, [1.0, 1.0, 1.0, 1.0, 1.0]} ==
+               [
+                 [1, 0, 1, 0, 0, {2, 1}],
+                 [0, 1, 0, 1, 0, {2, 1}],
+                 [0, 0, 0, 0, 1, {1, 1}],
+                 [1, 1, 0, 0, 0, {2, 1}],
+                 [0, 0, 1, 1, 1, {3, 1}]
+               ]
+               |> AugmentedMatrix.new()
                |> AugmentedMatrix.rref()
+
+      assert {:ok, [2.0, 0.0, 0.0, 2.0, 1.0]} ==
+               [
+                 [1, 0, 1, 0, 0, {2, 1}],
+                 [0, 1, 0, 1, 0, {2, 1}],
+                 [0, 0, 0, 0, 1, {1, 1}],
+                 [1, 1, 0, 0, 0, {2, 1}],
+                 [0, 0, 1, 1, 1, {3, 1}]
+               ]
+               |> AugmentedMatrix.new()
+               |> AugmentedMatrix.rref(default_value: 2)
     end
 
     test "returns approximate_solution" do
