@@ -77,9 +77,10 @@ defmodule Muscat.AugmentedMatrix do
   @spec rref(augmented_matrix :: matrix(), opts :: keyword()) :: rref_result()
   def rref(matrix, opts \\ []) do
     with upper_triangular_matrix <- upper_triangular_matrix(matrix),
-         {:ok, :single_solution} <- valid_solution_exists(upper_triangular_matrix) do
+         {:ok, solution_type} <- valid_solution_exists(upper_triangular_matrix) do
       solution =
         upper_triangular_matrix
+        |> fit_single_solution_matrix(solution_type, opts)
         |> diagonal_matrix()
         |> identity_matrix()
         |> take_solution(opts)
@@ -87,6 +88,137 @@ defmodule Muscat.AugmentedMatrix do
       {:ok, solution}
     end
   end
+
+  defp fit_single_solution_matrix(matrix, solution_type, opts) do
+    matrix
+    |> remove_zero_rows()
+    |> set_default_rows_if_needed(solution_type, opts)
+    |> sort_rows()
+  end
+
+  defp remove_zero_rows(matrix) do
+    matrix
+    |> Enum.group_by(& &1.row)
+    |> Enum.reject(fn {_row, cells} ->
+      Enum.all?(cells, &Fraction.is_zero_fraction(&1.value))
+    end)
+    |> Enum.map(fn {_row, cells} -> cells end)
+    |> List.flatten()
+  end
+
+  defp set_default_rows_if_needed(matrix, :single_solution, _), do: matrix
+
+  defp set_default_rows_if_needed(matrix, :infinite_solutions, opts) do
+    default_value = Keyword.get(opts, :default_value, Fraction.new(1))
+    coefficient_cols = Matrix.col_count(matrix) - 1
+    total_rows = Range.new(1, coefficient_cols) |> Enum.to_list()
+    {new_matrix, exist_rows} = missing_main_diagonal_cell_idxs(matrix)
+
+    new_cells =
+      Enum.reduce(total_rows -- exist_rows, [], fn row_idx, acc ->
+        coefficients =
+          Range.new(1, coefficient_cols)
+          |> Enum.map(fn
+            ^row_idx -> %Matrix.Cell{row: row_idx, col: row_idx, value: Fraction.new(1)}
+            col -> %Matrix.Cell{row: row_idx, col: col, value: Fraction.new(0)}
+          end)
+
+        constant = %Matrix.Cell{row: row_idx, col: coefficient_cols + 1, value: default_value}
+
+        [constant | coefficients] ++ acc
+      end)
+
+    new_cells ++ new_matrix
+  end
+
+  defp sort_rows(matrix) do
+    grouped_rows = Enum.group_by(matrix, & &1.row)
+    rows = Enum.map(grouped_rows, fn {_row, cells} -> first_non_zero_cell(cells) end)
+
+    Enum.zip(grouped_rows, rows)
+    |> Enum.map(fn {{_row, cells}, row} ->
+      Enum.map(cells, &Map.put(&1, :row, row))
+    end)
+    |> List.flatten()
+    |> Enum.sort_by(&{&1.row, &1.col})
+  end
+
+  defp missing_main_diagonal_cell_idxs(matrix) do
+    matrix
+    |> Enum.group_by(& &1.row)
+    |> Enum.reduce({matrix, []}, fn {row, cells}, {new_matrix, missing_rows} ->
+      case first_non_zero_cell(cells) do
+        ^row ->
+          {new_matrix, [row | missing_rows]}
+
+        col ->
+          new = Enum.map(cells, &Map.put(&1, :row, col))
+
+          new_matrix = new_matrix |> Matrix.remove_row(cells) |> Matrix.add_row(new)
+          {new_matrix, [col | missing_rows]}
+      end
+    end)
+  end
+
+  defp first_non_zero_cell(row_cells) do
+    row_cells
+    |> Enum.sort_by(& &1.col)
+    |> Enum.reduce_while(0, fn %{col: col, value: value}, _ ->
+      if is_zero_fraction(value) do
+        {:cont, nil}
+      else
+        {:halt, col}
+      end
+    end)
+  end
+
+  # defp replace_zero_rows_by_default_if_needed(matrix, :single_solution, _), do: matrix
+
+  # defp replace_zero_rows_by_default_if_needed(matrix, :infinite_solutions, opts) do
+  #   default_value = Keyword.get(opts, :default_value, Fraction.new(1))
+  #   row_count = Matrix.row_count(matrix)
+
+  #   matrix
+  #   |> Enum.group_by(& &1.row)
+  #   |> Enum.filter(fn {_row, cells} ->
+  #     Enum.all?(cells, &Fraction.is_zero_fraction(&1.value))
+  #   end)
+  #   |> Enum.reduce(matrix, fn {row, cells}, acc ->
+  #     constant_cell = Enum.at(cells, -1) |> Map.put(:value, default_value)
+  #     main_cell = Enum.at(cells, row - 1) |> Map.put(:value, Fraction.new(1))  defp replace_zero_rows_by_default_if_needed(matrix, :single_solution, _), do: matrix
+
+  # defp replace_zero_rows_by_default_if_needed(matrix, :infinite_solutions, opts) do
+  #   default_value = Keyword.get(opts, :default_value, Fraction.new(1))
+  #   row_count = Matrix.row_count(matrix)
+
+  #   matrix
+  #   |> Enum.group_by(& &1.row)
+  #   |> Enum.filter(fn {_row, cells} ->
+  #     Enum.all?(cells, &Fraction.is_zero_fraction(&1.value))
+  #   end)
+  #   |> Enum.reduce(matrix, fn {row, cells}, acc ->
+  #     constant_cell = Enum.at(cells, -1) |> Map.put(:value, default_value)
+  #     main_cell = Enum.at(cells, row - 1) |> Map.put(:value, Fraction.new(1))
+
+  #     cells =
+  #       cells
+  #       |> Enum.sort_by(& &1.col)
+  #       |> List.replace_at(-1, constant_cell)
+  #       |> List.replace_at(row - 1, main_cell)
+
+  #     Matrix.update_row(acc, cells)
+  #   end)
+  # end
+
+  #     cells =
+  #       cells
+  #       |> Enum.sort_by(& &1.col)
+  #       |> List.replace_at(-1, constant_cell)
+  #       |> List.replace_at(row - 1, main_cell)
+
+  #     Matrix.update_row(acc, cells)
+  #   end)
+  # end
 
   defp take_solution(identity_matrix, opts) do
     default_value = Keyword.get(opts, :default_value, :any)
@@ -117,6 +249,7 @@ defmodule Muscat.AugmentedMatrix do
         |> Enum.reduce(matrix, fn row, matrix ->
           elementary_row_transform(matrix, row)
         end)
+        |> replace_duplicated_by_zero()
     end
   end
 
@@ -148,6 +281,36 @@ defmodule Muscat.AugmentedMatrix do
 
         cells ++ other_cells
     end
+  end
+
+  defp replace_duplicated_by_zero(matrix) do
+    matrix
+    |> filter_duplicated_rows()
+    |> Enum.reduce(matrix, fn row_cells, acc ->
+      Matrix.update_row(acc, Enum.map(row_cells, &Map.put(&1, :value, Fraction.new(0))))
+    end)
+  end
+
+  defp filter_duplicated_rows(matrix) do
+    matrix
+    |> Enum.group_by(& &1.row)
+    |> Enum.sort_by(fn {row, _cells} -> row end)
+    |> Enum.map(fn {_row, cells} -> Enum.sort_by(cells, & &1.col) end)
+    |> do_filter_duplicated()
+  end
+
+  defp do_filter_duplicated(rows, acc \\ [])
+  defp do_filter_duplicated([], acc), do: acc
+
+  defp do_filter_duplicated([cells | others], acc) do
+    {zero_cells, valid_cells} =
+      Enum.split_with(others, fn other_cells ->
+        cells
+        |> Enum.zip(other_cells)
+        |> Enum.all?(fn {%{value: a}, %{value: b}} -> Fraction.equal?(a, b) end)
+      end)
+
+    do_filter_duplicated(valid_cells, zero_cells ++ acc)
   end
 
   defp do_elementary_transform(coefficient, base_row, row_cells) do
@@ -190,7 +353,7 @@ defmodule Muscat.AugmentedMatrix do
 
       augmented_rank == coefficient_rank and
           coefficient_rank < element_count ->
-        {:error, :infinite_solutions}
+        {:ok, :infinite_solutions}
 
       augmented_rank > element_count ->
         {:error, :approximate_solutions}
@@ -202,10 +365,9 @@ defmodule Muscat.AugmentedMatrix do
 
   def rank(matrix) do
     matrix
-    |> Enum.group_by(& &1.row)
-    |> Enum.reject(fn {_row, cells} ->
-      Enum.all?(cells, &Fraction.is_zero_fraction(&1.value))
-    end)
+    |> remove_zero_rows()
+    |> Enum.map(& &1.row)
+    |> Enum.uniq()
     |> length()
   end
 
