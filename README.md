@@ -1,8 +1,8 @@
 # Muscat
 
-![GitHub](https://img.shields.io/github/license/smartepsh/muscat?style=plastic)
-![GitHub last commit](https://img.shields.io/github/last-commit/smartepsh/muscat?label=last%20update&style=plastic)
-![Hex.pm](https://img.shields.io/hexpm/v/muscat?style=plastic)
+[![GitHub](https://img.shields.io/github/license/smartepsh/muscat?style=plastic)](https://github.com/smartepsh/muscat/blob/master/LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/smartepsh/muscat?label=last%20update&style=plastic)](https://github.com/smartepsh/muscat/commits/master)
+[![Hex.pm](https://img.shields.io/hexpm/v/muscat?style=plastic)](https://hex.pm/packages/muscat)
 
 **A simple pure elixir equation solver by [augmented matrix](https://en.wikipedia.org/wiki/Augmented_matrix).**
 
